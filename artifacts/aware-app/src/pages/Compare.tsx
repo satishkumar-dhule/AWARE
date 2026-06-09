@@ -399,28 +399,6 @@ export default function Compare() {
   const baselineRun = RUNS.find((r) => r.id === baseline);
   const candidateRun = RUNS.find((r) => r.id === candidate);
 
-  if (!baselineRun || !candidateRun) {
-    return (
-      <AppLayout activeHref="/compare">
-        <div style={{ textAlign: "center", padding: 64 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 600, color: "var(--proof-text-primary)" }}>
-            No runs to compare
-          </h2>
-          <p style={{ fontSize: 13, color: "var(--proof-text-secondary)", marginTop: 8 }}>
-            At least two runs are required for comparison.
-          </p>
-          <button
-            onClick={() => navigate("/runs")}
-            className="gcp-button"
-            style={{ fontSize: 13, marginTop: 16 }}
-          >
-            View Runs
-          </button>
-        </div>
-      </AppLayout>
-    );
-  }
-
   const diffs = React.useMemo(() => {
     if (!swapped) return DIFF_ROWS;
     return DIFF_ROWS.map((d) => {
@@ -460,6 +438,28 @@ export default function Compare() {
 
   const selectedDiff = selectedId ? (diffs.find((d) => d.id === selectedId) ?? null) : null;
   const hasActiveFilters = Object.values(colFilters).some((v) => v);
+
+  if (!baselineRun || !candidateRun) {
+    return (
+      <AppLayout activeHref="/compare">
+        <div style={{ textAlign: "center", padding: 64 }}>
+          <h2 style={{ fontSize: 18, fontWeight: 600, color: "var(--proof-text-primary)" }}>
+            No runs to compare
+          </h2>
+          <p style={{ fontSize: 13, color: "var(--proof-text-secondary)", marginTop: 8 }}>
+            At least two runs are required for comparison.
+          </p>
+          <button
+            onClick={() => navigate("/runs")}
+            className="gcp-button"
+            style={{ fontSize: 13, marginTop: 16 }}
+          >
+            View Runs
+          </button>
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout activeHref="/compare">

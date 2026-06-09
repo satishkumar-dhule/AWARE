@@ -70,10 +70,11 @@ export function AppLayout({
   const { updates, currentToast, dismissToast, pendingCount, clearCount } = useLiveStatus();
 
   const paletteRef = React.useRef(paletteOpen);
-  paletteRef.current = paletteOpen;
   const notifOpenRef = React.useRef(showNotifs);
-  notifOpenRef.current = showNotifs;
   const pendingG = React.useRef(false);
+
+  React.useEffect(() => { paletteRef.current = paletteOpen; }, [paletteOpen]);
+  React.useEffect(() => { notifOpenRef.current = showNotifs; }, [showNotifs]);
 
   React.useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -155,7 +156,7 @@ export function AppLayout({
     setIsDark(next);
     try {
       localStorage.setItem("proof-theme", next ? "dark" : "light");
-    } catch {}
+    } catch { /* ignore */ }
   };
 
   const isActive = (href: string) =>

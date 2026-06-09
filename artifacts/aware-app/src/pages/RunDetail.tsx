@@ -45,6 +45,12 @@ export default function RunDetail() {
   const [decision, setDecision] = React.useState(run ? getPromotionDecision(run.id) : null);
   const [expandScreenshot, setExpandScreenshot] = React.useState<FilmstripFrame | null>(null);
 
+  const urlTestId = React.useMemo(() => new URLSearchParams(urlSearch).get("testId"), [urlSearch]);
+  const [selectedResult, setSelectedResult] = React.useState<TestResult | null>(() => {
+    if (urlTestId && results) return results.find(r => r.id === urlTestId) ?? null;
+    return null;
+  });
+
   if (!run) {
     return (
       <AppLayout activeHref="/runs">
@@ -79,12 +85,6 @@ export default function RunDetail() {
   const catData = categories.map(cat => {
     const catResults = results.filter(r => r.category === cat);
     return { category: cat.slice(0, 8), pass: catResults.filter(r => r.status === "PASS").length, fail: catResults.filter(r => r.status === "FAIL").length };
-  });
-
-  const urlTestId = React.useMemo(() => new URLSearchParams(urlSearch).get("testId"), [urlSearch]);
-  const [selectedResult, setSelectedResult] = React.useState<TestResult | null>(() => {
-    if (urlTestId) return results.find(r => r.id === urlTestId) ?? null;
-    return null;
   });
 
   const selIdx = selectedResult ? filtered.findIndex(r => r.id === selectedResult.id) : -1;

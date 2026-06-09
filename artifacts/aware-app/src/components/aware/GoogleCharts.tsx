@@ -208,6 +208,15 @@ export function GoogleAreaChart({
     return safeData.slice(-timeRange);
   }, [safeData, timeRange, showTimeFrame]);
 
+  const dataTable = React.useMemo(() => {
+    const header = [columns[0], ...yKeys];
+    const body = filteredData.map((row) => [
+      String(row[xKey] ?? ""),
+      ...yKeys.map((k) => Number(row[k]) || 0),
+    ]);
+    return [header, ...body];
+  }, [columns, filteredData, xKey, yKeys]);
+
   if (filteredData.length === 0) {
     return (
       <div
@@ -225,17 +234,7 @@ export function GoogleAreaChart({
     );
   }
 
-  const dataTable = React.useMemo(() => {
-    const header = [columns[0], ...yKeys];
-    const body = filteredData.map((row) => [
-      String(row[xKey] ?? ""),
-      ...yKeys.map((k) => Number(row[k]) || 0),
-    ]);
-    return [header, ...body];
-  }, [columns, filteredData, xKey, yKeys]);
-
   const chartOptions = {
-    title,
     titleTextStyle: { fontSize: 13, color: "#9aa0a6" },
     legend: { position: "bottom", textStyle: { fontSize: 11 } },
     colors: colors || ["#5b8af5", "#f59e0b", "#22c55e", "#a855f7"],
@@ -349,6 +348,15 @@ export function GoogleBarChart({
     return safeData.slice(-timeRange);
   }, [safeData, timeRange, showTimeFrame]);
 
+  const dataTable = React.useMemo(() => {
+    const header = [columns[0], ...yKeys];
+    const body = filteredData.map((row) => [
+      String(row[xKey] ?? ""),
+      ...yKeys.map((k) => Number(row[k]) || 0),
+    ]);
+    return [header, ...body];
+  }, [columns, filteredData, xKey, yKeys]);
+
   if (filteredData.length === 0) {
     return (
       <div
@@ -365,15 +373,6 @@ export function GoogleBarChart({
       </div>
     );
   }
-
-  const dataTable = React.useMemo(() => {
-    const header = [columns[0], ...yKeys];
-    const body = filteredData.map((row) => [
-      String(row[xKey] ?? ""),
-      ...yKeys.map((k) => Number(row[k]) || 0),
-    ]);
-    return [header, ...body];
-  }, [columns, filteredData, xKey, yKeys]);
 
   const chartType = isHorizontal ? "BarChart" : "ColumnChart";
 

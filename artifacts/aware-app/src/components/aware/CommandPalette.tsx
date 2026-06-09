@@ -145,9 +145,7 @@ export function CommandPalette({ onClose }: { onClose: () => void }) {
       .filter((r) => !typeFilter || r.type === typeFilter);
   }, [q, typeFilter, fuse]);
 
-  React.useEffect(() => {
-    if (activeIdx >= filtered.length) setActiveIdx(0);
-  }, [activeIdx, filtered.length]);
+  const safeActiveIdx = activeIdx >= filtered.length ? 0 : activeIdx;
 
   const handleKey = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowDown") {
@@ -158,8 +156,8 @@ export function CommandPalette({ onClose }: { onClose: () => void }) {
       e.preventDefault();
       setActiveIdx((i) => Math.max(i - 1, 0));
     }
-    if (e.key === "Enter" && filtered[activeIdx]) {
-      navigate(filtered[activeIdx].href);
+    if (e.key === "Enter" && filtered[safeActiveIdx]) {
+      navigate(filtered[safeActiveIdx].href);
       onClose();
     }
   };
@@ -328,7 +326,7 @@ export function CommandPalette({ onClose }: { onClose: () => void }) {
                     gap: 10,
                     padding: "10px 18px",
                     cursor: "pointer",
-                    background: i === activeIdx ? "var(--proof-blue-bg)" : "transparent",
+                    background: i === safeActiveIdx ? "var(--proof-blue-bg)" : "transparent",
                     transition: "background 0.1s",
                   }}
                   onClick={() => {
