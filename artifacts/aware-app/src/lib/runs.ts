@@ -87,8 +87,7 @@ export function computeTestDetailForName(name: string): TestDetail {
   for (let i = 1; i < history.length; i++) {
     if (history[i].status !== history[i - 1].status) flips++;
   }
-  const flakinessScore =
-    history.length > 1 ? Math.round((flips / (history.length - 1)) * 100) : 0;
+  const flakinessScore = history.length > 1 ? Math.round((flips / (history.length - 1)) * 100) : 0;
   const avgDuration =
     history.length > 0
       ? Math.round(history.reduce((s, h) => s + h.duration, 0) / history.length)

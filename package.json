@@ -11,6 +11,11 @@
   },
   "private": true,
   "packageManager": "pnpm@10.26.1",
+  "pnpm": {
+    "overrides": {
+      "qs": ">=6.15.2"
+    }
+  },
   "devDependencies": {
     "prettier": "^3.8.3",
     "typescript": "~5.9.3"

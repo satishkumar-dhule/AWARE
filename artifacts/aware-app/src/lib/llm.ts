@@ -91,7 +91,8 @@ class WebLLMProvider implements ILLMProvider {
     const avail = await checkWebLLM();
     if (!avail) {
       return {
-        content: "WebLLM is not available. This browser lacks WebGPU support or the `@mlc-ai/web-llm` package is not installed.\n\nTo use WebLLM:\n1. Use Chrome (≥113) with WebGPU enabled\n2. Run `pnpm add @mlc-ai/web-llm`\n\nFor now, switch to **Mock (offline)** or configure an **OpenAI-compatible API** in Settings.",
+        content:
+          "WebLLM is not available. This browser lacks WebGPU support or the `@mlc-ai/web-llm` package is not installed.\n\nTo use WebLLM:\n1. Use Chrome (≥113) with WebGPU enabled\n2. Run `pnpm add @mlc-ai/web-llm`\n\nFor now, switch to **Mock (offline)** or configure an **OpenAI-compatible API** in Settings.",
         finishReason: "error",
       };
     }
@@ -100,7 +101,7 @@ class WebLLMProvider implements ILLMProvider {
       await this._initPromise;
     }
     const res = await this.engine.chat.completions.create({
-      messages: req.messages.map(m => ({ role: m.role, content: m.content })),
+      messages: req.messages.map((m) => ({ role: m.role, content: m.content })),
       temperature: req.temperature ?? this.config.temperature,
       max_tokens: req.maxTokens ?? this.config.maxTokens,
     });
@@ -160,7 +161,8 @@ class ChromeBuiltinLLMProvider implements ILLMProvider {
     const avail = await checkChromeAI();
     if (!avail) {
       return {
-        content: "Chrome Built-in AI is not available. This requires Chrome 148+ on desktop with Gemini Nano enabled.\n\nTo enable:\n1. Go to chrome://flags/#optimization-guide-on-device-model → Enabled\n2. Go to chrome://flags/#prompt-api-for-gemini-nano → Enabled\n3. Restart Chrome\n4. Visit chrome://on-device-internals to check model download status",
+        content:
+          "Chrome Built-in AI is not available. This requires Chrome 148+ on desktop with Gemini Nano enabled.\n\nTo enable:\n1. Go to chrome://flags/#optimization-guide-on-device-model → Enabled\n2. Go to chrome://flags/#prompt-api-for-gemini-nano → Enabled\n3. Restart Chrome\n4. Visit chrome://on-device-internals to check model download status",
         finishReason: "error",
       };
     }
@@ -169,8 +171,11 @@ class ChromeBuiltinLLMProvider implements ILLMProvider {
       await this._initPromise;
     }
 
-    const systemMsg = req.messages.find(m => m.role === "system");
-    const userMessages = req.messages.filter(m => m.role !== "system").map(m => m.content).join("\n");
+    const systemMsg = req.messages.find((m) => m.role === "system");
+    const userMessages = req.messages
+      .filter((m) => m.role !== "system")
+      .map((m) => m.content)
+      .join("\n");
 
     try {
       const result = await this.session.prompt(userMessages);
@@ -294,7 +299,8 @@ export function clearChatHistory(): void {
   _chatHistory = [];
 }
 
-export function syncChatHistory(messages: { role: "system" | "user" | "assistant"; content: string }[]): void {
+export function syncChatHistory(
+  messages: { role: "system" | "user" | "assistant"; content: string }[],
+): void {
   _chatHistory = messages.slice(-50);
 }
-

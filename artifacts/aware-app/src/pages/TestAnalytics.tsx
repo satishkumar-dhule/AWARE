@@ -9,8 +9,15 @@ import { ENVS } from "@/lib/constants";
 import { useTestData } from "@/hooks/useTestData";
 import { PanelErrorBoundary } from "@/components/aware/PanelErrorBoundary";
 import {
-  ArrowLeft, BarChart3, Clock, Activity, AlertTriangle,
-  Search, Share2, ChevronRight, FileText,
+  ArrowLeft,
+  BarChart3,
+  Clock,
+  Activity,
+  AlertTriangle,
+  Search,
+  Share2,
+  ChevronRight,
+  FileText,
 } from "lucide-react";
 import { useSimpleToast } from "@/hooks/useSimpleToast";
 
@@ -31,39 +38,57 @@ export default function TestAnalytics() {
       const results = getTestResultsForRun(RUNS[runIdx]?.id ?? "");
       const result = results[Math.min(resultIdx, results.length - 1)];
       if (result) {
-        const tc = tcs.find(t => t.name === result.name);
+        const tc = tcs.find((t) => t.name === result.name);
         if (tc) return tc.id;
       }
     }
     return id;
   })();
   const rawDiffId = params.get("diffId") ?? "diff_0";
-  const isTcMode = rawTestId !== "" && tcs.some(t => t.id === rawTestId);
+  const isTcMode = rawTestId !== "" && tcs.some((t) => t.id === rawTestId);
 
-  const testCase = isTcMode ? tcs.find(t => t.id === rawTestId) ?? null : null;
+  const testCase = isTcMode ? (tcs.find((t) => t.id === rawTestId) ?? null) : null;
   const selectedTestId = isTcMode ? rawTestId : rawDiffId;
 
-  const tcIdx = isTcMode ? tcs.findIndex(t => t.id === rawTestId) : -1;
-  const idx = isTcMode ? Math.abs(tcIdx % DIFF_ROWS.length) : Number(selectedTestId.replace("diff_", ""));
+  const tcIdx = isTcMode ? tcs.findIndex((t) => t.id === rawTestId) : -1;
+  const idx = isTcMode
+    ? Math.abs(tcIdx % DIFF_ROWS.length)
+    : Number(selectedTestId.replace("diff_", ""));
   const diffs = DIFF_ROWS;
   if (diffs.length === 0) {
     return (
       <AppLayout activeHref="/analytics">
         <div style={{ textAlign: "center", padding: 64 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 600, color: "var(--proof-text-primary)" }}>No test data available</h2>
-          <p style={{ fontSize: 13, color: "var(--proof-text-secondary)", marginTop: 8 }}>Run a comparison first to see analytics.</p>
-          <button onClick={() => navigate("/compare")} className="gcp-button" style={{ fontSize: 13, marginTop: 16 }}>Go to Compare</button>
+          <h2 style={{ fontSize: 18, fontWeight: 600, color: "var(--proof-text-primary)" }}>
+            No test data available
+          </h2>
+          <p style={{ fontSize: 13, color: "var(--proof-text-secondary)", marginTop: 8 }}>
+            Run a comparison first to see analytics.
+          </p>
+          <button
+            onClick={() => navigate("/compare")}
+            className="gcp-button"
+            style={{ fontSize: 13, marginTop: 16 }}
+          >
+            Go to Compare
+          </button>
         </div>
       </AppLayout>
     );
   }
   const diff = diffs[Math.min(idx, diffs.length - 1)] ?? diffs[0];
-  const detail = Array.isArray(TEST_DETAILS) && TEST_DETAILS.length > 0
-    ? TEST_DETAILS[idx % TEST_DETAILS.length] ?? { history: [], passRate: 0, flakinessScore: 0, avgDuration: 0 }
-    : { history: [], passRate: 0, flakinessScore: 0, avgDuration: 0 };
+  const detail =
+    Array.isArray(TEST_DETAILS) && TEST_DETAILS.length > 0
+      ? (TEST_DETAILS[idx % TEST_DETAILS.length] ?? {
+          history: [],
+          passRate: 0,
+          flakinessScore: 0,
+          avgDuration: 0,
+        })
+      : { history: [], passRate: 0, flakinessScore: 0, avgDuration: 0 };
   const selectorItems = isTcMode
-    ? tcs.map(t => ({ id: t.id, name: t.name }))
-    : diffs.map(d => ({ id: d.id, name: d.name }));
+    ? tcs.map((t) => ({ id: t.id, name: t.name }))
+    : diffs.map((d) => ({ id: d.id, name: d.name }));
 
   const handleSelectChange = (id: string) => {
     const key = isTcMode ? "testId" : "diffId";
@@ -71,10 +96,10 @@ export default function TestAnalytics() {
   };
 
   const envLabels = getEnvLabels();
-  const envStatus = (envLabels.length > 0 ? envLabels : ENVS).map(env => {
-    const runs = detail.history.filter(h => h.env === env);
-    const pass = runs.filter(r => r.status === "PASS").length;
-    const fail = runs.filter(r => r.status === "FAIL").length;
+  const envStatus = (envLabels.length > 0 ? envLabels : ENVS).map((env) => {
+    const runs = detail.history.filter((h) => h.env === env);
+    const pass = runs.filter((r) => r.status === "PASS").length;
+    const fail = runs.filter((r) => r.status === "FAIL").length;
     return { env: env.split("/")[0] + "/" + env.split("/")[1], pass, fail, total: runs.length };
   });
 
@@ -87,51 +112,127 @@ export default function TestAnalytics() {
   }));
 
   const isFlaky = detail.flakinessScore > 20;
-  const trend = detail.history.slice(-3).every(h => h.status === "FAIL") ? "degrading" :
-    detail.history.slice(-3).every(h => h.status === "PASS") ? "stable" : "flaky";
+  const trend = detail.history.slice(-3).every((h) => h.status === "FAIL")
+    ? "degrading"
+    : detail.history.slice(-3).every((h) => h.status === "PASS")
+      ? "stable"
+      : "flaky";
 
   return (
     <AppLayout activeHref="/analytics">
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-
         {/* Header */}
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <Link href={isTcMode ? "/tests" : "/compare"}>
-            <a className="gcp-button gcp-button-sm"><ArrowLeft size={13} /> {isTcMode ? "Tests" : "Compare"}</a>
+            <a className="gcp-button gcp-button-sm">
+              <ArrowLeft size={13} /> {isTcMode ? "Tests" : "Compare"}
+            </a>
           </Link>
           <ChevronRight size={14} style={{ color: "var(--proof-text-secondary)" }} />
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <Search size={13} style={{ color: "var(--proof-text-secondary)" }} />
-            <select className="gcp-input" style={{ fontFamily: "var(--font-mono)", fontSize: 11, maxWidth: 340 }}
-              value={selectedTestId} onChange={e => handleSelectChange(e.target.value)}>
-              {selectorItems.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
+            <select
+              className="gcp-input"
+              style={{ fontFamily: "var(--font-mono)", fontSize: 11, maxWidth: 340 }}
+              value={selectedTestId}
+              onChange={(e) => handleSelectChange(e.target.value)}
+            >
+              {selectorItems.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.name}
+                </option>
+              ))}
             </select>
           </div>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: 12,
+          }}
+        >
           <div>
-            <h1 style={{ fontSize: 18, fontWeight: 700, color: "var(--proof-text)", maxWidth: 700 }}>
+            <h1
+              style={{ fontSize: 18, fontWeight: 700, color: "var(--proof-text)", maxWidth: 700 }}
+            >
               {isTcMode && testCase ? testCase.name : diff.name}
-              {isTcMode && testCase && <span style={{ fontSize: 11, color: "var(--proof-text-secondary)", fontWeight: 400, marginLeft: 8, fontFamily: "var(--font-mono)" }}>{testCase.id} · v{testCase.version}</span>}
+              {isTcMode && testCase && (
+                <span
+                  style={{
+                    fontSize: 11,
+                    color: "var(--proof-text-secondary)",
+                    fontWeight: 400,
+                    marginLeft: 8,
+                    fontFamily: "var(--font-mono)",
+                  }}
+                >
+                  {testCase.id} · v{testCase.version}
+                </span>
+              )}
             </h1>
             <div style={{ display: "flex", gap: 8, marginTop: 6 }}>
-              <span style={{ fontSize: 11, background: "var(--proof-grey-bg)", padding: "2px 8px", borderRadius: 4, border: "1px solid var(--proof-grey)" }}>{isTcMode && testCase ? testCase.category : diff.category}</span>
-              {isTcMode && testCase && <span style={{ fontSize: 11, fontWeight: 600, color: testCase.priority === "P0" ? "var(--proof-red)" : "var(--proof-text-secondary)" }}>{testCase.priority}</span>}
-              {!isTcMode && <span style={{ fontSize: 11, fontWeight: 600, color: isFlaky ? "var(--proof-yellow)" : "var(--proof-green)" }}>
-                {isFlaky ? "⚠ Flaky" : "✓ Stable"}
-              </span>}
-              <span style={{ fontSize: 11, color: "var(--proof-text-secondary)" }}>{detail.history.length} runs tracked</span>
+              <span
+                style={{
+                  fontSize: 11,
+                  background: "var(--proof-grey-bg)",
+                  padding: "2px 8px",
+                  borderRadius: 4,
+                  border: "1px solid var(--proof-grey)",
+                }}
+              >
+                {isTcMode && testCase ? testCase.category : diff.category}
+              </span>
+              {isTcMode && testCase && (
+                <span
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 600,
+                    color:
+                      testCase.priority === "P0"
+                        ? "var(--proof-red)"
+                        : "var(--proof-text-secondary)",
+                  }}
+                >
+                  {testCase.priority}
+                </span>
+              )}
+              {!isTcMode && (
+                <span
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 600,
+                    color: isFlaky ? "var(--proof-yellow)" : "var(--proof-green)",
+                  }}
+                >
+                  {isFlaky ? "⚠ Flaky" : "✓ Stable"}
+                </span>
+              )}
+              <span style={{ fontSize: 11, color: "var(--proof-text-secondary)" }}>
+                {detail.history.length} runs tracked
+              </span>
             </div>
           </div>
           <div style={{ display: "flex", gap: 10 }}>
             {isTcMode && testCase && (
-              <button onClick={() => navigate(`/testdoc?testId=${testCase.id}`)} className="gcp-button gcp-button-sm">
+              <button
+                onClick={() => navigate(`/testdoc?testId=${testCase.id}`)}
+                className="gcp-button gcp-button-sm"
+              >
                 <FileText size={13} /> Definition
               </button>
             )}
-            <button onClick={() => { navigator.clipboard.writeText(window.location.href).then(() => show("Permalink copied")); }}
-              className="gcp-button gcp-button-sm">
+            <button
+              onClick={() => {
+                navigator.clipboard
+                  .writeText(window.location.href)
+                  .then(() => show("Permalink copied"));
+              }}
+              className="gcp-button gcp-button-sm"
+            >
               <Share2 size={13} /> Share
             </button>
           </div>
@@ -139,11 +240,32 @@ export default function TestAnalytics() {
 
         {/* Trend alert */}
         {trend === "degrading" && (
-          <div style={{ background: "var(--proof-red-bg)", border: "1px solid var(--proof-red)", borderRadius: 4, padding: "10px 14px", display: "flex", alignItems: "center", gap: 10, fontSize: 12 }}>
+          <div
+            style={{
+              background: "var(--proof-red-bg)",
+              border: "1px solid var(--proof-red)",
+              borderRadius: 4,
+              padding: "10px 14px",
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              fontSize: 12,
+            }}
+          >
             <AlertTriangle size={14} style={{ color: "var(--proof-red)" }} />
-            <strong>Degrading trend</strong> — last 3 runs all FAIL. Investigate before promoting changes.
-            <button onClick={() => { navigator.clipboard.writeText(`Test degrading: ${diff.name}\nLast 3 runs: FAIL\nPass Rate: ${detail.passRate}%`).then(() => show("Alert copied")); }}
-              className="gcp-button gcp-button-xs" style={{ marginLeft: "auto" }}>
+            <strong>Degrading trend</strong> — last 3 runs all FAIL. Investigate before promoting
+            changes.
+            <button
+              onClick={() => {
+                navigator.clipboard
+                  .writeText(
+                    `Test degrading: ${diff.name}\nLast 3 runs: FAIL\nPass Rate: ${detail.passRate}%`,
+                  )
+                  .then(() => show("Alert copied"));
+              }}
+              className="gcp-button gcp-button-xs"
+              style={{ marginLeft: "auto" }}
+            >
               Copy Alert
             </button>
           </div>
@@ -151,18 +273,49 @@ export default function TestAnalytics() {
 
         {/* KPI tiles */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 12 }}>
-          <CTAStatCard label="Pass Rate" value={`${detail.passRate}%`} subtitle={`${detail.history.length} runs`} accentColor="var(--proof-blue)" />
-          <CTAStatCard label="Flakiness" value={`${detail.flakinessScore}%`} subtitle="status changes" accentColor={isFlaky ? "var(--proof-yellow)" : "var(--proof-green)"} />
-          <CTAStatCard label="Avg Duration" value={`${detail.avgDuration}ms`} subtitle="across all runs" accentColor="var(--proof-green)" />
-          <CTAStatCard label="Environments" value={ENVS.length} subtitle="tested across" accentColor="var(--proof-text-secondary)" />
+          <CTAStatCard
+            label="Pass Rate"
+            value={`${detail.passRate}%`}
+            subtitle={`${detail.history.length} runs`}
+            accentColor="var(--proof-blue)"
+          />
+          <CTAStatCard
+            label="Flakiness"
+            value={`${detail.flakinessScore}%`}
+            subtitle="status changes"
+            accentColor={isFlaky ? "var(--proof-yellow)" : "var(--proof-green)"}
+          />
+          <CTAStatCard
+            label="Avg Duration"
+            value={`${detail.avgDuration}ms`}
+            subtitle="across all runs"
+            accentColor="var(--proof-green)"
+          />
+          <CTAStatCard
+            label="Environments"
+            value={ENVS.length}
+            subtitle="tested across"
+            accentColor="var(--proof-text-secondary)"
+          />
         </div>
 
         {/* Charts */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-
           <PanelErrorBoundary label="History chart">
             <div className="gcp-card" style={{ padding: 16 }}>
-              <h3 style={{ fontSize: 12, fontWeight: 600, color: "var(--proof-text-secondary)", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 12, display: "flex", alignItems: "center", gap: 6 }}>
+              <h3
+                style={{
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: "var(--proof-text-secondary)",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.5px",
+                  marginBottom: 12,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                }}
+              >
                 <Activity size={13} /> Pass/Fail Across Runs
               </h3>
               <GoogleBarChart
@@ -180,7 +333,19 @@ export default function TestAnalytics() {
 
           <PanelErrorBoundary label="Duration chart">
             <div className="gcp-card" style={{ padding: 16 }}>
-              <h3 style={{ fontSize: 12, fontWeight: 600, color: "var(--proof-text-secondary)", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 12, display: "flex", alignItems: "center", gap: 6 }}>
+              <h3
+                style={{
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: "var(--proof-text-secondary)",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.5px",
+                  marginBottom: 12,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                }}
+              >
                 <Clock size={13} /> Duration Trend (ms)
               </h3>
               <GoogleAreaChart
@@ -198,7 +363,19 @@ export default function TestAnalytics() {
 
           {/* Env breakdown */}
           <div className="gcp-card" style={{ padding: 16, gridColumn: "1 / -1" }}>
-            <h3 style={{ fontSize: 12, fontWeight: 600, color: "var(--proof-text-secondary)", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 12, display: "flex", alignItems: "center", gap: 6 }}>
+            <h3
+              style={{
+                fontSize: 12,
+                fontWeight: 600,
+                color: "var(--proof-text-secondary)",
+                textTransform: "uppercase",
+                letterSpacing: "0.5px",
+                marginBottom: 12,
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+              }}
+            >
               <BarChart3 size={13} /> Pass/Fail by Environment
             </h3>
             <GoogleBarChart
@@ -217,32 +394,68 @@ export default function TestAnalytics() {
 
         {/* Run history table */}
         <div className="gcp-card" style={{ overflow: "hidden" }}>
-          <div style={{ padding: "10px 14px", borderBottom: "1px solid var(--proof-grey)", background: "var(--proof-grey-bg)" }}>
-            <h3 style={{ fontSize: 13, fontWeight: 600, color: "var(--proof-text)" }}>Run History</h3>
+          <div
+            style={{
+              padding: "10px 14px",
+              borderBottom: "1px solid var(--proof-grey)",
+              background: "var(--proof-grey-bg)",
+            }}
+          >
+            <h3 style={{ fontSize: 13, fontWeight: 600, color: "var(--proof-text)" }}>
+              Run History
+            </h3>
           </div>
           <div style={{ overflowX: "auto" }}>
             <table className="gcp-table">
-              <thead><tr>
-                <th>Run ID</th>
-                <th>Status</th>
-                <th style={{ textAlign: "right" }}>Duration</th>
-                <th>Environment</th>
-                <th>Actions</th>
-              </tr></thead>
+              <thead>
+                <tr>
+                  <th>Run ID</th>
+                  <th>Status</th>
+                  <th style={{ textAlign: "right" }}>Duration</th>
+                  <th>Environment</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
               <tbody>
-                {detail.history.map(h => (
+                {detail.history.map((h) => (
                   <tr key={h.runId} style={{ cursor: "pointer" }}>
                     <td>
                       <Link href={`/runs/${h.runId}`}>
-                        <a style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--proof-blue)", textDecoration: "none" }}>{h.runId}</a>
+                        <a
+                          style={{
+                            fontFamily: "var(--font-mono)",
+                            fontSize: 11,
+                            color: "var(--proof-blue)",
+                            textDecoration: "none",
+                          }}
+                        >
+                          {h.runId}
+                        </a>
                       </Link>
                     </td>
-                    <td><span className={`gcp-badge ${h.status === "PASS" ? "gcp-badge-pass" : "gcp-badge-fail"}`}>{h.status}</span></td>
-                    <td style={{ textAlign: "right", fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--proof-text-secondary)" }}>{h.duration}ms</td>
+                    <td>
+                      <span
+                        className={`gcp-badge ${h.status === "PASS" ? "gcp-badge-pass" : "gcp-badge-fail"}`}
+                      >
+                        {h.status}
+                      </span>
+                    </td>
+                    <td
+                      style={{
+                        textAlign: "right",
+                        fontFamily: "var(--font-mono)",
+                        fontSize: 11,
+                        color: "var(--proof-text-secondary)",
+                      }}
+                    >
+                      {h.duration}ms
+                    </td>
                     <td style={{ fontSize: 12 }}>{h.env}</td>
                     <td>
                       <Link href={`/runs/${h.runId}`}>
-                        <a className="gcp-button gcp-button-xs" style={{ padding: "2px 7px" }}>View Run</a>
+                        <a className="gcp-button gcp-button-xs" style={{ padding: "2px 7px" }}>
+                          View Run
+                        </a>
                       </Link>
                     </td>
                   </tr>
