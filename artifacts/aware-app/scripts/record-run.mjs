@@ -287,11 +287,14 @@ const run = {
   network: "production",
 };
 
+// Re-read & merge to avoid losing data from concurrent CI runs
 const runs = readJSON(RUNS_FILE);
-runs.unshift(run);
-writeJSON(RUNS_FILE, runs);
+const filtered = runs.filter(r => r.id !== run.id);
+filtered.unshift(run);
+writeJSON(RUNS_FILE, filtered);
 console.log(`✓ Recorded run ${run.id}: ${results.passed}/${results.total} passed (${results.passPct}%) ${results.status}`);
 
+// Re-read right before write to minimize race window
 const testResultsByRun = readJSONObj(TEST_RESULTS_FILE);
 testResultsByRun[run.id] = testResults;
 writeJSON(TEST_RESULTS_FILE, testResultsByRun);

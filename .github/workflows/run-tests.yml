@@ -1,5 +1,9 @@
 name: Run Tests
 
+concurrency:
+  group: run-tests-${{ github.ref }}
+  cancel-in-progress: false
+
 permissions:
   contents: write
 
